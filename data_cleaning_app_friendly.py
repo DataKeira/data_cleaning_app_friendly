@@ -9,7 +9,7 @@ from dash.dependencies import Input, Output, State
 app_render = dash.Dash(__name__, external_stylesheets=[
     'https://cdn.rawgit.com/chriddyp/0247653a7c52feb4c48437e1c1837f75/raw/a68333b876edaf62df2efa7bac0e9b3613258851/dash.css'
 ])
-
+server = app_render.server
 app_render.layout = html.Div([
     html.H1('ProteoCore Data Cleaning App', style={'text-align': 'center', 'font-family': 'Lato'}),
     html.H4('Upload a CSV file and clean your data!', style={'text-align': 'center'}),
