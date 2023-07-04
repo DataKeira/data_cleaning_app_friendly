@@ -59,7 +59,7 @@ http://127.0.0.1:8050/
 
 - The app will remove rows where all columns except the "Gene" column have a value of 0.
 
-- Columns containing "MaxLFQ" or "Unique" in their names will be excluded from the analysis.
+- Columns containing ("MaxLFQ", "Unique", or "Total") Intensity in their names will be excluded from the analysis.
 
 - Duplicates will be aggragated instead of dropped.
 
