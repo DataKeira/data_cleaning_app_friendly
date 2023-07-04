@@ -94,7 +94,7 @@ def clean_data(target_species, csv_contents,):
         filtered_data_row['Gene'] = filtered_data_row['Gene'].fillna(filtered_data_row['Entry Name'])
 
         # Setting a value to 'Gene' and 'Intensity' columns except 'MaxLFQ' or 'Unique intensity'
-        columns_to_keep = ['Gene'] + [col for col in filtered_data_row.columns if 'Intensity' in col and 'MaxLFQ' not in col and 'Unique' not in col]
+        columns_to_keep = ['Gene'] + [col for col in filtered_data_row.columns if 'Intensity' in col and 'MaxLFQ' not in col and 'Unique' not in col and 'Total' not in col]
         
               # Removes all columns except columns chosen above
         filtered_data_column = filtered_data_row[columns_to_keep]
