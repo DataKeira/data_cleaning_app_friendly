@@ -5,6 +5,13 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
+import csv
+import os
+
+#helper function to extract file extension from filename
+def get_file_extension(filename):
+    _, extension = os.path.splitext(filename)
+    return extension.lower() if extension else None
 
 app_render = dash.Dash(__name__, external_stylesheets=[
     'https://cdn.rawgit.com/chriddyp/0247653a7c52feb4c48437e1c1837f75/raw/a68333b876edaf62df2efa7bac0e9b3613258851/dash.css'
@@ -14,8 +21,8 @@ app_render.layout = html.Div([
     html.H1('ProteoCore Data Cleaning App', style={'text-align': 'center', 'font-family': 'Lato'}),
     html.H4('Upload a CSV file and clean your data!', style={'text-align': 'center'}),
     dcc.Upload(
-        id='csv-file-upload',
-        children=html.Div(['Drag and Drop or ', html.A('Select CSV File')]),
+        id='data-file-upload',
+        children=html.Div(['Drag and Drop or ', html.A('Select File')]),
         style={
             'width': '100%',
             'height': '60px',
@@ -37,7 +44,7 @@ app_render.layout = html.Div([
     dcc.Input(
         id='target-species-input',
         type='text',
-        placeholder='Enter Target Species (e.g., Homo sapiens OX=9606)',
+        placeholder='Enter Species (matches Organism column exactly)',
         style={
             'width': '50%',
             'padding': '10px',
@@ -80,13 +87,20 @@ app_render.layout = html.Div([
     
 ])
 
-def clean_data(target_species, csv_contents,):
-    if csv_contents is not None:
-        # Read the data from the uploaded CSV file
-        content_type, content_string = csv_contents.split(',')
+def clean_data(target_species, data_contents, file_extension):
+    if data_contents is not None:
+        # Read the data from the uploaded TSV or CSV file
+        content_type, content_string = data_contents.split(',')
         decoded = base64.b64decode(content_string)
-        df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-      
+        
+        #check and read file
+        if file_extension.lower() == '.csv':
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+        elif file_extension.lower() == '.tsv':
+            df = pd.read_csv(io.StringIO(decoded.decode('utf-8')), sep='\t', quoting=csv.QUOTE_NONE)      
+        else:
+            return None
+
         # Filter the data to include only rows with the target species
         filtered_data_row = df[df['Organism'] == target_species]
 
@@ -115,6 +129,8 @@ def clean_data(target_species, csv_contents,):
         csv_string = clean_data.to_csv(index=False, encoding='utf-8')
 
         return csv_string
+
+
         
     return None
 
@@ -124,11 +140,11 @@ def clean_data(target_species, csv_contents,):
         # Store the file upload status in the dcc.Store component
         Output('upload-message', 'children'),  # Display the message here
     ],
-    Input('csv-file-upload', 'contents'),
+    Input('data-file-upload', 'contents'),
 )
 
-def update_upload_status(csv_contents):
-    if csv_contents is not None:
+def update_upload_status(data_contents):
+    if data_contents is not None:
         # File uploaded successfully, update the status to True and show the message
         return True, "File uploaded successfully"
 
@@ -143,23 +159,24 @@ def update_upload_status(csv_contents):
     ],
     Input('clean-button', 'n_clicks'),
     State('target-species-input', 'value'),
-    State('csv-file-upload', 'contents'),
+    State('data-file-upload', 'contents'),
+    State('data-file-upload', 'filename'),
     State('upload-status', 'data'),
 )
-def update_cleaned_data(n_clicks, target_species, csv_contents, uplaod_status):
+def update_cleaned_data(n_clicks, target_species, data_contents, filename, uplaod_status):
     if n_clicks is None or n_clicks == 0:
         return True, None, ""
-
-    cleaned_data_csv = clean_data(target_species, csv_contents)
     
+    if data_contents is not None:
+        file_extension = get_file_extension(filename)
+        cleaned_data_csv = clean_data(target_species, data_contents, file_extension)
 
-    if cleaned_data_csv is not None:
-        # If the cleaned_data_csv is not None, enable the button and provide the download link
-        href = "data:text/csv;charset=utf-8," + cleaned_data_csv
-        return False, href,"Data has been cleaned successfully!"
+        if cleaned_data_csv is not None:
+            # If the cleaned_data_csv is not None, enable the button and provide the download link
+            href = "data:text/csv;charset=utf-8," + cleaned_data_csv
+            return False, href,"Data has been cleaned successfully!"
     
     return True, None,""
 
 if __name__ == '__main__':
     app_render.run_server(debug=True)
-
