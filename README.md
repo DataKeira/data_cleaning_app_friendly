@@ -1,6 +1,6 @@
-# ProteoCore Data Cleaning Dash App for Render Live
+# Testing branch Render Live
 
-Similar to the ProteoCore Data Cleaning Dash App. This code is easier to deploy on render due to the ability to upload and download your data. Looks a bit nicer.
+Test and merge new updates while others can still use the orginial app on the main branch. 
 
 ## How to Use
 
