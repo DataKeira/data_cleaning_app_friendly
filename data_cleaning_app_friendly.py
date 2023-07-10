@@ -2,8 +2,8 @@ import pandas as pd
 import io
 import base64
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 from dash.dependencies import Input, Output, State
 import csv
 import os
@@ -19,7 +19,7 @@ app_render = dash.Dash(__name__, external_stylesheets=[
 server = app_render.server
 app_render.layout = html.Div([
     html.H1('ProteoCore Data Cleaning App', style={'text-align': 'center', 'font-family': 'Lato'}),
-    html.H4('Upload a CSV file and clean your data!', style={'text-align': 'center'}),
+    html.H4('Upload a TSV or CSV file and clean your data!', style={'text-align': 'center'}),
     dcc.Upload(
         id='data-file-upload',
         children=html.Div(['Drag and Drop or ', html.A('Select File')]),
