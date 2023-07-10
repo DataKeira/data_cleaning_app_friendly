@@ -6,7 +6,7 @@ Similar to the ProteoCore Data Cleaning Dash App. This code is easier to deploy 
 
 1. **Enter Target Species**: Specify the target species for data filtering. Only rows with the specified species in the "Organism" column will be included in the analysis. For example (Homo sapiens OX=9606), include both the species and OX number. Is case sensitive. 
 
-2. **Upload CSV File**: Drag and Drop, or select an exsisting file. A message will pop-up stating that your file has be uploaded successfully.
+2. **Upload TSV or CSV File**: Drag and Drop, or select an exsisting file. A message will pop-up stating that your file has be uploaded successfully.
 
 4. **Clean Data**: Click the "Clean Data" button to process the data based on the specified target species and column filtering. A message will pop-up stating that your cleaned data is ready for download.
 
@@ -53,7 +53,7 @@ http://127.0.0.1:8050/
 
 ## Note
 
-- Make sure to have the CSV file containing the proteomics data in the correct format with required columns such as "Organism," "Gene," and "Intensity" columns.
+- Make sure to have the TSV or CSV file containing the proteomics data in the correct format with required columns such as "Organism," "Gene," and "Intensity" columns. From Fragger.
 
 - The app will fill empty values in the "Gene" column with the "Entry Name" value for identification.
 
