@@ -1,3 +1,4 @@
+
 import pandas as pd
 import io
 import base64
@@ -87,6 +88,7 @@ app_render.layout = html.Div([
     
 ])
 
+
 def clean_data(target_species, data_contents, file_extension):
     if data_contents is not None:
         # Read the data from the uploaded TSV or CSV file
@@ -116,17 +118,42 @@ def clean_data(target_species, data_contents, file_extension):
         # Filter columns that contain the word 'Intensity'
         intensity_columns = filtered_data_column.columns[filtered_data_column.columns.str.contains('Intensity')]
 
-        # Combine the duplicate rows based on the 'Gene' column and sum the values in the intensity columns
-        cleaned_data = filtered_data_column.groupby('Gene')[intensity_columns].sum().reset_index()
-        
-        # Check if all columns except 'Gene' have a value of 0
-        mask = (cleaned_data.loc[:, cleaned_data.columns != 'Gene'] == 0).all(axis=1)
+        # Filter columns that contain the word 'Intensity'
+        intensity_columns = [col for col in filtered_data_column.columns if 'Intensity' in col]
 
-        # Filter the DataFrame to remove rows where the condition is True
-        clean_data = cleaned_data[~mask]
+        # Create a DataFrame to store cleaned data with identifiers
+        cleaned_data_with_identifiers = pd.DataFrame(columns=['Gene'] + intensity_columns)
+
+        #initialize empty list to hold row with identifiers
+
+        rows_with_identifiers = []
+
+        # Add isoform identifiers to duplicates
+        gene_counts = {}
+        for index, row in filtered_data_column.iterrows():
+            gene = row['Gene']
+            if gene in gene_counts:
+                gene_counts[gene] += 1
+                gene_with_identifier = f"{gene}_{gene_counts[gene]}"
+            else:
+                gene_counts[gene] = 1
+                gene_with_identifier = gene
+
+             # Create a dictionary with the identifier and intensity values
+            identifier_and_intensity = {'Gene': gene_with_identifier}
+            for col in intensity_columns:
+                identifier_and_intensity[col] = row[col]
+
+            
+            # append row with identifier and intensities
+            rows_with_identifiers.append(identifier_and_intensity)
+
+        # Append the row with the identifier and intensities to the DataFrame
+        cleaned_data_with_identifiers = pd.DataFrame(rows_with_identifiers)
 
         # Convert the cleaned data to CSV format
-        csv_string = clean_data.to_csv(index=False, encoding='utf-8')
+        csv_string = cleaned_data_with_identifiers.to_csv(index=False, encoding='utf-8')
+
 
         return csv_string
 
