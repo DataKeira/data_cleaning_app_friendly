@@ -53,7 +53,6 @@ http://127.0.0.1:8050/
 - The app will fill empty values in the "Gene" column with the "Entry Name" value for identification.
 - The app will remove rows where all columns except the "Gene" column have a value of 0.
 - Columns containing ("MaxLFQ", "Unique", or "Total") Intensity in their names will be excluded from the analysis.
-- Duplicates will be identified and one of the duplicates will be marked with "_2".
 - If you wish to add labels to your sample columns you must do so manually onto the downloaded cleaned data csv file.
 - Does not remove keratin contamination if your target species is Human.
 
